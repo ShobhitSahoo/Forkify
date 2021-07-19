@@ -1,0 +1,27 @@
+{
+  "name": "forkify-v2",
+  "version": "2.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShobhitSahoo/Forkify.git"
+  },
+  "author": "Shobhit Sahoo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ShobhitSahoo/Forkify/issues"
+  },
+  "homepage": "https://github.com/ShobhitSahoo/Forkify#readme",
+  "devDependencies": {
+    "@parcel/transformer-sass": "^2.0.0-beta.2",
+    "parcel": "^2.0.0-beta.2"
+  },
+  "dependencies": {
+    "sass": "^1.35.2"
+  }
+}
