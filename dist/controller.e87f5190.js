@@ -875,7 +875,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.TIMEOUT_SEC = exports.API_URL = void 0;
-var API_URL = "https://forkify-api.herokuapp.com/api/v2/recipes";
+var API_URL = "https://forkify-api.herokuapp.com/api/v2/recipes/";
 exports.API_URL = API_URL;
 var TIMEOUT_SEC = 10; //5ed6604591c37cdc054bcc13
 //5ed6604591c37cdc054bc886
@@ -959,7 +959,7 @@ exports.getJSON = getJSON;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.loadRecipe = exports.state = void 0;
+exports.loadSearchResult = exports.loadRecipe = exports.state = void 0;
 
 require("regenerator-runtime/runtime");
 
@@ -972,7 +972,11 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 var state = {
-  recipe: {}
+  recipe: {},
+  search: {
+    query: '',
+    results: []
+  }
 };
 exports.state = state;
 
@@ -985,7 +989,7 @@ var loadRecipe = /*#__PURE__*/function () {
           case 0:
             _context.prev = 0;
             _context.next = 3;
-            return (0, _helper.getJSON)("".concat(_config.API_URL, "/").concat(id));
+            return (0, _helper.getJSON)("".concat(_config.API_URL).concat(id));
 
           case 3:
             data = _context.sent;
@@ -1001,15 +1005,16 @@ var loadRecipe = /*#__PURE__*/function () {
               ingredients: recipe.ingredients
             }; // console.log(state.recipe);
 
-            _context.next = 11;
+            _context.next = 12;
             break;
 
           case 8:
             _context.prev = 8;
             _context.t0 = _context["catch"](0);
             console.error("".concat(_context.t0, " \uD83D\uDE11\uD83D\uDE11\uD83D\uDE11"));
+            throw _context.t0;
 
-          case 11:
+          case 12:
           case "end":
             return _context.stop();
         }
@@ -1023,6 +1028,52 @@ var loadRecipe = /*#__PURE__*/function () {
 }();
 
 exports.loadRecipe = loadRecipe;
+
+var loadSearchResult = /*#__PURE__*/function () {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(query) {
+    var data;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            _context2.prev = 0;
+            state.search.query = query;
+            _context2.next = 4;
+            return (0, _helper.getJSON)("".concat(_config.API_URL, "?search=").concat(query));
+
+          case 4:
+            data = _context2.sent;
+            state.search.results = data.data.recipes.map(function (recipe) {
+              return {
+                id: recipe.id,
+                title: recipe.title,
+                publisher: recipe.publisher,
+                image: recipe.image_url
+              };
+            });
+            _context2.next = 12;
+            break;
+
+          case 8:
+            _context2.prev = 8;
+            _context2.t0 = _context2["catch"](0);
+            console.error("".concat(_context2.t0, " \uD83D\uDE11\uD83D\uDE11\uD83D\uDE11"));
+            throw _context2.t0;
+
+          case 12:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2, null, [[0, 8]]);
+  }));
+
+  return function loadSearchResult(_x2) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+exports.loadSearchResult = loadSearchResult;
 },{"regenerator-runtime/runtime":"node_modules/regenerator-runtime/runtime.js","./config":"src/js/config.js","./helper":"src/js/helper.js"}],"src/img/icons.svg":[function(require,module,exports) {
 module.exports = "/icons.ae3c38d5.svg";
 },{}],"node_modules/fractional/index.js":[function(require,module,exports) {
@@ -1414,8 +1465,6 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
 
 function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
@@ -1431,6 +1480,10 @@ function _classApplyDescriptorSet(receiver, descriptor, value) { if (descriptor.
 var _parentElement = /*#__PURE__*/new WeakMap();
 
 var _data = /*#__PURE__*/new WeakMap();
+
+var _errorMessage = /*#__PURE__*/new WeakMap();
+
+var _message = /*#__PURE__*/new WeakMap();
 
 var _clear = /*#__PURE__*/new WeakSet();
 
@@ -1454,11 +1507,14 @@ var RecipeView = /*#__PURE__*/function () {
       value: void 0
     });
 
-    _defineProperty(this, "renderSpinner", function () {
-      var markup = "\n          <div class=\"spinner\">\n            <svg>\n              <use href=\"".concat(_icons.default, "#icon-loader\"></use>\n            </svg>\n          </div>\n        ");
-      _classPrivateFieldGet(this, _parentElement).innerHTML = "";
+    _errorMessage.set(this, {
+      writable: true,
+      value: "We couldn't find the recipe. Please try any other recipe"
+    });
 
-      _classPrivateFieldGet(this, _parentElement).insertAdjacentHTML('afterbegin', markup);
+    _message.set(this, {
+      writable: true,
+      value: ""
     });
   }
 
@@ -1468,6 +1524,35 @@ var RecipeView = /*#__PURE__*/function () {
       _classPrivateFieldSet(this, _data, data);
 
       var markup = this._generateMarkup();
+
+      _classPrivateMethodGet(this, _clear, _clear2).call(this);
+
+      _classPrivateFieldGet(this, _parentElement).insertAdjacentHTML('afterbegin', markup);
+    }
+  }, {
+    key: "renderSpinner",
+    value: function renderSpinner() {
+      var markup = "\n          <div class=\"spinner\">\n            <svg>\n              <use href=\"".concat(_icons.default, "#icon-loader\"></use>\n            </svg>\n          </div>\n        ");
+
+      _classPrivateMethodGet(this, _clear, _clear2).call(this);
+
+      _classPrivateFieldGet(this, _parentElement).insertAdjacentHTML('afterbegin', markup);
+    }
+  }, {
+    key: "renderError",
+    value: function renderError() {
+      var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _classPrivateFieldGet(this, _errorMessage);
+      var markup = "\n            <div class=\"error\">\n                <div>\n                    <svg>\n                        <use href=\"".concat(_icons.default, "#icon-alert-triangle\"></use>\n                    </svg>\n                </div>\n                <p>").concat(message, "</p>\n            </div>\n        ");
+
+      _classPrivateMethodGet(this, _clear, _clear2).call(this);
+
+      _classPrivateFieldGet(this, _parentElement).insertAdjacentHTML('afterbegin', markup);
+    }
+  }, {
+    key: "renderMessage",
+    value: function renderMessage() {
+      var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _classPrivateFieldGet(this, _message);
+      var markup = "\n            <div class=\"message\">\n                <div>\n                    <svg>\n                        <use href=\"".concat(_icons.default, "#icon-smile\"></use>\n                    </svg>\n                </div>\n                <p>").concat(message, "</p>\n            </div>\n        ");
 
       _classPrivateMethodGet(this, _clear, _clear2).call(this);
 
@@ -1501,7 +1586,74 @@ function _generateMarupIngredient2(ingredient) {
 var _default = new RecipeView();
 
 exports.default = _default;
-},{"../../img/icons.svg":"src/img/icons.svg","fractional":"node_modules/fractional/index.js"}],"node_modules/core-js/internals/global.js":[function(require,module,exports) {
+},{"../../img/icons.svg":"src/img/icons.svg","fractional":"node_modules/fractional/index.js"}],"src/js/views/searchView.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _classPrivateMethodGet(receiver, privateSet, fn) { if (!privateSet.has(receiver)) { throw new TypeError("attempted to get private field on non-instance"); } return fn; }
+
+function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
+
+function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!privateMap.has(receiver)) { throw new TypeError("attempted to " + action + " private field on non-instance"); } return privateMap.get(receiver); }
+
+function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
+
+var _parentElement = /*#__PURE__*/new WeakMap();
+
+var _clearInput = /*#__PURE__*/new WeakSet();
+
+var SearchView = /*#__PURE__*/function () {
+  function SearchView() {
+    _classCallCheck(this, SearchView);
+
+    _clearInput.add(this);
+
+    _parentElement.set(this, {
+      writable: true,
+      value: document.querySelector('.search')
+    });
+  }
+
+  _createClass(SearchView, [{
+    key: "getQuery",
+    value: function getQuery() {
+      var query = _classPrivateFieldGet(this, _parentElement).querySelector('.search__field').value;
+
+      _classPrivateMethodGet(this, _clearInput, _clearInput2).call(this);
+
+      return query;
+    }
+  }, {
+    key: "addHandlerSearch",
+    value: function addHandlerSearch(handler) {
+      _classPrivateFieldGet(this, _parentElement).addEventListener('submit', function (e) {
+        e.preventDefault();
+        handler();
+      });
+    }
+  }]);
+
+  return SearchView;
+}();
+
+function _clearInput2() {
+  _classPrivateFieldGet(this, _parentElement).querySelector('.search__field').value = '';
+}
+
+var _default = new SearchView();
+
+exports.default = _default;
+},{}],"node_modules/core-js/internals/global.js":[function(require,module,exports) {
 var global = arguments[3];
 var check = function (it) {
   return it && it.Math == Math && it;
@@ -13471,6 +13623,8 @@ var model = _interopRequireWildcard(require("./model.js"));
 
 var _recipeView = _interopRequireDefault(require("./views/recipeView"));
 
+var _searchView = _interopRequireDefault(require("./views/searchView"));
+
 require("regenerator-runtime/runtime");
 
 require("core-js/stable/");
@@ -13485,8 +13639,7 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-var recipeContainer = document.querySelector('.recipe'); // https://forkify-api.herokuapp.com/v2
-///////////////////////////////////////
+var recipeContainer = document.querySelector(".recipe");
 
 var controlRecipes = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
@@ -13522,8 +13675,9 @@ var controlRecipes = /*#__PURE__*/function () {
           case 10:
             _context.prev = 10;
             _context.t0 = _context["catch"](0);
-            alert(_context.t0);
             console.log(_context.t0);
+
+            _recipeView.default.renderError();
 
           case 14:
           case "end":
@@ -13538,12 +13692,59 @@ var controlRecipes = /*#__PURE__*/function () {
   };
 }();
 
+var controlSearchResults = /*#__PURE__*/function () {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+    var query;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            _context2.prev = 0;
+            query = _searchView.default.getQuery();
+
+            if (query) {
+              _context2.next = 4;
+              break;
+            }
+
+            return _context2.abrupt("return");
+
+          case 4:
+            _context2.next = 6;
+            return model.loadSearchResult(query);
+
+          case 6:
+            // Rendering the search results
+            console.log(model.state.search.results);
+            _context2.next = 12;
+            break;
+
+          case 9:
+            _context2.prev = 9;
+            _context2.t0 = _context2["catch"](0);
+            console.log(_context2.t0);
+
+          case 12:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2, null, [[0, 9]]);
+  }));
+
+  return function controlSearchResults() {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
 var init = function init() {
   _recipeView.default.addHandlerRender(controlRecipes);
+
+  _searchView.default.addHandlerSearch(controlSearchResults);
 };
 
 init();
-},{"./model.js":"src/js/model.js","./views/recipeView":"src/js/views/recipeView.js","regenerator-runtime/runtime":"node_modules/regenerator-runtime/runtime.js","core-js/stable/":"node_modules/core-js/stable/index.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./model.js":"src/js/model.js","./views/recipeView":"src/js/views/recipeView.js","./views/searchView":"src/js/views/searchView.js","regenerator-runtime/runtime":"node_modules/regenerator-runtime/runtime.js","core-js/stable/":"node_modules/core-js/stable/index.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
