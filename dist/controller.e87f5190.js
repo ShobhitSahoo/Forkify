@@ -12868,32 +12868,42 @@ var renderSpinner = function renderSpinner(parentEl) {
 
 var showRecipe = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-    var res, data, recipe, markup;
+    var id, res, data, recipe, markup;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             _context.prev = 0;
-            renderSpinner(recipeContainer);
-            _context.next = 4;
-            return fetch('https://forkify-api.herokuapp.com/api/v2/recipes/5ed6604591c37cdc054bc886');
+            id = window.location.hash.slice(1);
+
+            if (id) {
+              _context.next = 4;
+              break;
+            }
+
+            return _context.abrupt("return");
 
           case 4:
-            res = _context.sent;
+            renderSpinner(recipeContainer);
             _context.next = 7;
-            return res.json();
+            return fetch("https://forkify-api.herokuapp.com/api/v2/recipes/".concat(id));
 
           case 7:
+            res = _context.sent;
+            _context.next = 10;
+            return res.json();
+
+          case 10:
             data = _context.sent;
 
             if (res.ok) {
-              _context.next = 10;
+              _context.next = 13;
               break;
             }
 
             throw new Error("".concat(data.message, " (").concat(res.status, ")"));
 
-          case 10:
+          case 13:
             recipe = data.data.recipe;
             recipe = {
               id: recipe.id,
@@ -12912,21 +12922,21 @@ var showRecipe = /*#__PURE__*/function () {
             }).join(''), "\n\n        </ul>\n      </div>\n\n      <div class=\"recipe__directions\">\n        <h2 class=\"heading--2\">How to cook it</h2>\n        <p class=\"recipe__directions-text\">\n          This recipe was carefully designed and tested by\n          <span class=\"recipe__publisher\">").concat(recipe.publisher, "</span>. Please check out\n          directions at their website.\n        </p>\n        <a\n          class=\"btn--small recipe__btn\"\n          href=\"").concat(recipe.sourceURL, "\"\n          target=\"_blank\"\n        >\n          <span>Directions</span>\n          <svg class=\"search__icon\">\n            <use href=\"").concat(_icons.default, "#icon-arrow-right\"></use>\n          </svg>\n        </a>\n      </div>\n    ");
             recipeContainer.innerHTML = "";
             recipeContainer.insertAdjacentHTML('afterbegin', markup);
-            _context.next = 22;
+            _context.next = 25;
             break;
 
-          case 18:
-            _context.prev = 18;
+          case 21:
+            _context.prev = 21;
             _context.t0 = _context["catch"](0);
             alert(_context.t0);
             console.log(_context.t0);
 
-          case 22:
+          case 25:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 18]]);
+    }, _callee, null, [[0, 21]]);
   }));
 
   return function showRecipe() {
@@ -12934,7 +12944,9 @@ var showRecipe = /*#__PURE__*/function () {
   };
 }();
 
-showRecipe();
+['hashchange', 'load'].forEach(function (e) {
+  return window.addEventListener(e, showRecipe);
+});
 },{"regenerator-runtime/runtime":"node_modules/regenerator-runtime/runtime.js","core-js/stable/":"node_modules/core-js/stable/index.js","../img/icons.svg":"src/img/icons.svg"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -12963,7 +12975,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52801" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57180" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
