@@ -868,35 +868,53 @@ try {
   Function("r", "regeneratorRuntime = r")(runtime);
 }
 
-},{}],"src/js/model.js":[function(require,module,exports) {
+},{}],"src/js/config.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.loadRecipe = exports.state = void 0;
+exports.TIMEOUT_SEC = exports.API_URL = void 0;
+var API_URL = "https://forkify-api.herokuapp.com/api/v2/recipes";
+exports.API_URL = API_URL;
+var TIMEOUT_SEC = 10; //5ed6604591c37cdc054bcc13
+//5ed6604591c37cdc054bc886
 
-require("regenerator-runtime/runtime");
+exports.TIMEOUT_SEC = TIMEOUT_SEC;
+},{}],"src/js/helper.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getJSON = void 0;
+
+var _regeneratorRuntime = require("regenerator-runtime");
+
+var _config = require("./config");
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-var state = {
-  recipe: {}
+var timeout = function timeout(s) {
+  return new Promise(function (_, reject) {
+    setTimeout(function () {
+      reject(new Error("Request took too long! Timeout after ".concat(s, " second")));
+    }, s * 1000);
+  });
 };
-exports.state = state;
 
-var loadRecipe = /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(id) {
-    var res, data, recipe;
+var getJSON = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(url) {
+    var res, data;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             _context.prev = 0;
             _context.next = 3;
-            return fetch("https://forkify-api.herokuapp.com/api/v2/recipes/".concat(id));
+            return Promise.race([fetch(url), timeout(_config.TIMEOUT_SEC)]);
 
           case 3:
             res = _context.sent;
@@ -914,6 +932,63 @@ var loadRecipe = /*#__PURE__*/function () {
             throw new Error("".concat(data.message, " (").concat(res.status, ")"));
 
           case 9:
+            return _context.abrupt("return", data);
+
+          case 12:
+            _context.prev = 12;
+            _context.t0 = _context["catch"](0);
+            throw _context.t0;
+
+          case 15:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, null, [[0, 12]]);
+  }));
+
+  return function getJSON(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+exports.getJSON = getJSON;
+},{"regenerator-runtime":"node_modules/regenerator-runtime/runtime.js","./config":"src/js/config.js"}],"src/js/model.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.loadRecipe = exports.state = void 0;
+
+require("regenerator-runtime/runtime");
+
+var _config = require("./config");
+
+var _helper = require("./helper");
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+var state = {
+  recipe: {}
+};
+exports.state = state;
+
+var loadRecipe = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(id) {
+    var data, recipe;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            _context.prev = 0;
+            _context.next = 3;
+            return (0, _helper.getJSON)("".concat(_config.API_URL, "/").concat(id));
+
+          case 3:
+            data = _context.sent;
             recipe = data.data.recipe;
             state.recipe = {
               id: recipe.id,
@@ -926,21 +1001,20 @@ var loadRecipe = /*#__PURE__*/function () {
               ingredients: recipe.ingredients
             }; // console.log(state.recipe);
 
-            _context.next = 17;
+            _context.next = 11;
             break;
 
-          case 13:
-            _context.prev = 13;
+          case 8:
+            _context.prev = 8;
             _context.t0 = _context["catch"](0);
-            alert(_context.t0);
-            console.log(_context.t0);
+            console.error("".concat(_context.t0, " \uD83D\uDE11\uD83D\uDE11\uD83D\uDE11"));
 
-          case 17:
+          case 11:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 13]]);
+    }, _callee, null, [[0, 8]]);
   }));
 
   return function loadRecipe(_x) {
@@ -949,7 +1023,7 @@ var loadRecipe = /*#__PURE__*/function () {
 }();
 
 exports.loadRecipe = loadRecipe;
-},{"regenerator-runtime/runtime":"node_modules/regenerator-runtime/runtime.js"}],"src/img/icons.svg":[function(require,module,exports) {
+},{"regenerator-runtime/runtime":"node_modules/regenerator-runtime/runtime.js","./config":"src/js/config.js","./helper":"src/js/helper.js"}],"src/img/icons.svg":[function(require,module,exports) {
 module.exports = "/icons.ae3c38d5.svg";
 },{}],"node_modules/fractional/index.js":[function(require,module,exports) {
 /*
@@ -1398,6 +1472,13 @@ var RecipeView = /*#__PURE__*/function () {
       _classPrivateMethodGet(this, _clear, _clear2).call(this);
 
       _classPrivateFieldGet(this, _parentElement).insertAdjacentHTML('afterbegin', markup);
+    }
+  }, {
+    key: "addHandlerRender",
+    value: function addHandlerRender(handler) {
+      ['hashchange', 'load'].forEach(function (e) {
+        return window.addEventListener(e, handler);
+      });
     }
   }, {
     key: "_generateMarkup",
@@ -13404,17 +13485,8 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-var recipeContainer = document.querySelector('.recipe');
-
-var timeout = function timeout(s) {
-  return new Promise(function (_, reject) {
-    setTimeout(function () {
-      reject(new Error("Request took too long! Timeout after ".concat(s, " second")));
-    }, s * 1000);
-  });
-}; // https://forkify-api.herokuapp.com/v2
+var recipeContainer = document.querySelector('.recipe'); // https://forkify-api.herokuapp.com/v2
 ///////////////////////////////////////
-
 
 var controlRecipes = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
@@ -13466,9 +13538,11 @@ var controlRecipes = /*#__PURE__*/function () {
   };
 }();
 
-['hashchange', 'load'].forEach(function (e) {
-  return window.addEventListener(e, controlRecipes);
-});
+var init = function init() {
+  _recipeView.default.addHandlerRender(controlRecipes);
+};
+
+init();
 },{"./model.js":"src/js/model.js","./views/recipeView":"src/js/views/recipeView.js","regenerator-runtime/runtime":"node_modules/regenerator-runtime/runtime.js","core-js/stable/":"node_modules/core-js/stable/index.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
