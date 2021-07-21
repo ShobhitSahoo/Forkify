@@ -1102,11 +1102,16 @@ var updateServings = function updateServings(newServings) {
 
 exports.updateServings = updateServings;
 
+var persistBookmark = function persistBookmark() {
+  localStorage.setItem('bookmarks', JSON.stringify(state.bookmarks));
+};
+
 var addBookmark = function addBookmark(recipe) {
   // Add bookmark to state
   state.bookmarks.push(recipe); // Mark current recipe as bookmark
 
   if (recipe.id === state.recipe.id) state.recipe.bookmarked = true;
+  persistBookmark();
 };
 
 exports.addBookmark = addBookmark;
@@ -1118,9 +1123,20 @@ var removeBookmark = function removeBookmark(id) {
 
   state.bookmarks.splice(index, 1);
   if (id === state.recipe.id) state.recipe.bookmarked = false;
+  persistBookmark();
 };
 
 exports.removeBookmark = removeBookmark;
+
+var init = function init() {
+  var storage = localStorage.getItem('bookmarks');
+
+  if (storage) {
+    state.bookmarks = JSON.parse(storage);
+  }
+};
+
+init();
 },{"regenerator-runtime/runtime":"node_modules/regenerator-runtime/runtime.js","./config":"src/js/config.js","./helper":"src/js/helper.js"}],"src/img/icons.svg":[function(require,module,exports) {
 module.exports = "/icons.ae3c38d5.svg";
 },{}],"src/js/views/View.js":[function(require,module,exports) {
@@ -1972,6 +1988,11 @@ var BookmarksView = /*#__PURE__*/function (_View) {
   }
 
   _createClass(BookmarksView, [{
+    key: "addHandlerRender",
+    value: function addHandlerRender(handler) {
+      window.addEventListener('load', handler);
+    }
+  }, {
     key: "_generateMarkup",
     value: function _generateMarkup() {
       return this._data.map(function (bookmark) {
@@ -14097,8 +14118,7 @@ var controlRecipes = /*#__PURE__*/function () {
 
           case 9:
             // Rendering the recipe into markup
-            _recipeView.default.render(model.state.recipe); // controlServings();
-
+            _recipeView.default.render(model.state.recipe);
 
             _context.next = 16;
             break;
@@ -14201,7 +14221,13 @@ var controlAddBookmark = function controlAddBookmark() {
   _bookmarksView.default.render(model.state.bookmarks);
 };
 
+var controlBookmarks = function controlBookmarks() {
+  _bookmarksView.default.render(model.state.bookmarks);
+};
+
 var init = function init() {
+  _bookmarksView.default.addHandlerRender(controlBookmarks);
+
   _recipeView.default.addHandlerRender(controlRecipes);
 
   _recipeView.default.addHandlerUpdateServings(controlServings);
