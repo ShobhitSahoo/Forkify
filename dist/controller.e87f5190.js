@@ -891,7 +891,7 @@ exports.KEY = KEY;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.sendJSON = exports.getJSON = void 0;
+exports.AJAX = void 0;
 
 var _regeneratorRuntime = require("regenerator-runtime");
 
@@ -909,110 +909,99 @@ var timeout = function timeout(s) {
   });
 };
 
-var getJSON = /*#__PURE__*/function () {
+var AJAX = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(url) {
-    var res, data;
+    var uploadData,
+        fetchPro,
+        res,
+        data,
+        _args = arguments;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _context.prev = 0;
-            _context.next = 3;
-            return Promise.race([fetch(url), timeout(_config.TIMEOUT_SEC)]);
-
-          case 3:
-            res = _context.sent;
-            _context.next = 6;
-            return res.json();
-
-          case 6:
-            data = _context.sent;
-
-            if (res.ok) {
-              _context.next = 9;
-              break;
-            }
-
-            throw new Error("".concat(data.message, " (").concat(res.status, ")"));
-
-          case 9:
-            return _context.abrupt("return", data);
-
-          case 12:
-            _context.prev = 12;
-            _context.t0 = _context["catch"](0);
-            throw _context.t0;
-
-          case 15:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, _callee, null, [[0, 12]]);
-  }));
-
-  return function getJSON(_x) {
-    return _ref.apply(this, arguments);
-  };
-}();
-
-exports.getJSON = getJSON;
-
-var sendJSON = /*#__PURE__*/function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(url, uploadData) {
-    var fetchPOST, res, data;
-    return regeneratorRuntime.wrap(function _callee2$(_context2) {
-      while (1) {
-        switch (_context2.prev = _context2.next) {
-          case 0:
-            _context2.prev = 0;
-            fetchPOST = fetch(url, {
+            uploadData = _args.length > 1 && _args[1] !== undefined ? _args[1] : undefined;
+            _context.prev = 1;
+            fetchPro = uploadData ? fetch(url, {
               method: "POST",
               headers: {
                 'Content-Type': 'application/json'
               },
               body: JSON.stringify(uploadData)
-            });
-            _context2.next = 4;
-            return Promise.race([fetchPOST, timeout(_config.TIMEOUT_SEC)]);
+            }) : fetch(url);
+            _context.next = 5;
+            return Promise.race([fetchPro, timeout(_config.TIMEOUT_SEC)]);
 
-          case 4:
-            res = _context2.sent;
-            _context2.next = 7;
+          case 5:
+            res = _context.sent;
+            _context.next = 8;
             return res.json();
 
-          case 7:
-            data = _context2.sent;
+          case 8:
+            data = _context.sent;
 
             if (res.ok) {
-              _context2.next = 10;
+              _context.next = 11;
               break;
             }
 
             throw new Error("".concat(data.message, " (").concat(res.status, ")"));
 
-          case 10:
-            return _context2.abrupt("return", data);
+          case 11:
+            return _context.abrupt("return", data);
 
-          case 13:
-            _context2.prev = 13;
-            _context2.t0 = _context2["catch"](0);
-            throw _context2.t0;
+          case 14:
+            _context.prev = 14;
+            _context.t0 = _context["catch"](1);
+            throw _context.t0;
 
-          case 16:
+          case 17:
           case "end":
-            return _context2.stop();
+            return _context.stop();
         }
       }
-    }, _callee2, null, [[0, 13]]);
+    }, _callee, null, [[1, 14]]);
   }));
 
-  return function sendJSON(_x2, _x3) {
-    return _ref2.apply(this, arguments);
+  return function AJAX(_x) {
+    return _ref.apply(this, arguments);
   };
 }();
+/*export const getJSON = async function(url) {
+    try {
+        const res = await Promise.race([fetch(url), timeout(TIMEOUT_SEC)]);
+        const data = await res.json();
+        
+        if(!res.ok) throw new Error(`${data.message} (${res.status})`);
+        return data;
 
-exports.sendJSON = sendJSON;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const sendJSON = async function(url, uploadData) {
+    try {
+        const fetchPOST = fetch(url, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            }, 
+            body: JSON.stringify(uploadData)
+        });
+        const res = await Promise.race([fetchPOST, timeout(TIMEOUT_SEC)]);
+        const data = await res.json();
+        
+        if(!res.ok) throw new Error(`${data.message} (${res.status})`);
+        return data;
+
+    } catch (error) {
+        throw error;
+    }
+};*/
+
+
+exports.AJAX = AJAX;
 },{"regenerator-runtime":"node_modules/regenerator-runtime/runtime.js","./config":"src/js/config.js"}],"src/js/model.js":[function(require,module,exports) {
 "use strict";
 
@@ -1086,30 +1075,30 @@ var loadRecipe = /*#__PURE__*/function () {
           case 0:
             _context.prev = 0;
             _context.next = 3;
-            return (0, _helper.getJSON)("".concat(_config.API_URL).concat(id));
+            return (0, _helper.AJAX)("".concat(_config.API_URL).concat(id, "?key=").concat(_config.KEY));
 
           case 3:
             data = _context.sent;
             state.recipe = createRecipeObject(data);
             if (state.bookmarks.some(function (b) {
               return b.id === id;
-            })) state.recipe.bookmarked = true;else state.recipe.bookmarked = false;
-            console.log(state.recipe);
-            _context.next = 13;
+            })) state.recipe.bookmarked = true;else state.recipe.bookmarked = false; // console.log(state.recipe);
+
+            _context.next = 12;
             break;
 
-          case 9:
-            _context.prev = 9;
+          case 8:
+            _context.prev = 8;
             _context.t0 = _context["catch"](0);
             console.error("".concat(_context.t0, " \uD83D\uDE11\uD83D\uDE11\uD83D\uDE11"));
             throw _context.t0;
 
-          case 13:
+          case 12:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 9]]);
+    }, _callee, null, [[0, 8]]);
   }));
 
   return function loadRecipe(_x) {
@@ -1129,17 +1118,19 @@ var loadSearchResult = /*#__PURE__*/function () {
             _context2.prev = 0;
             state.search.query = query;
             _context2.next = 4;
-            return (0, _helper.getJSON)("".concat(_config.API_URL, "?search=").concat(query));
+            return (0, _helper.AJAX)("".concat(_config.API_URL, "?search=").concat(query, "&key=").concat(_config.KEY));
 
           case 4:
             data = _context2.sent;
             state.search.results = data.data.recipes.map(function (recipe) {
-              return {
+              return _objectSpread({
                 id: recipe.id,
                 title: recipe.title,
                 publisher: recipe.publisher,
                 image: recipe.image_url
-              };
+              }, recipe.key && {
+                key: recipe.key
+              });
             });
             _context2.next = 12;
             break;
@@ -1231,7 +1222,9 @@ var uploadRecipe = /*#__PURE__*/function () {
             ingredients = Object.entries(newRecipe).filter(function (entry) {
               return entry[0].startsWith('ingredient') && entry[1] !== '';
             }).map(function (ing) {
-              var ingArr = ing[1].replaceAll(' ').split(',');
+              var ingArr = ing[1].split(',').map(function (el) {
+                return el.trim();
+              });
               if (ingArr.length !== 3) throw new Error('Invalid ingredient format! Please use the correct format 😅');
 
               var _ingArr = _slicedToArray(ingArr, 3),
@@ -1255,7 +1248,7 @@ var uploadRecipe = /*#__PURE__*/function () {
               ingredients: ingredients
             };
             _context3.next = 5;
-            return (0, _helper.sendJSON)("".concat(_config.API_URL, "?key=").concat(_config.KEY), recipe);
+            return (0, _helper.AJAX)("".concat(_config.API_URL, "?key=").concat(_config.KEY), recipe);
 
           case 5:
             data = _context3.sent;
@@ -1855,7 +1848,7 @@ var RecipeView = /*#__PURE__*/function (_View) {
   }, {
     key: "_generateMarkup",
     value: function _generateMarkup() {
-      return "\n        <figure class=\"recipe__fig\">\n            <img src=\"".concat(this._data.image, "\" alt=\"").concat(this._data.title, "\" class=\"recipe__img\" />\n            <h1 class=\"recipe__title\">\n            <span>").concat(this._data.title, "</span>\n            </h1>\n        </figure>\n\n        <div class=\"recipe__details\">\n            <div class=\"recipe__info\">\n            <svg class=\"recipe__info-icon\">\n                <use href=\"").concat(_icons.default, "#icon-clock\"></use>\n            </svg>\n            <span class=\"recipe__info-data recipe__info-data--minutes\">").concat(this._data.cookingTime, "</span>\n            <span class=\"recipe__info-text\">minutes</span>\n            </div>\n            <div class=\"recipe__info\">\n            <svg class=\"recipe__info-icon\">\n                <use href=\"").concat(_icons.default, "#icon-users\"></use>\n            </svg>\n            <span class=\"recipe__info-data recipe__info-data--people\">").concat(this._data.servings, "</span>\n            <span class=\"recipe__info-text\">").concat(this._data.servings === 1 ? 'serving' : 'servings', "</span>\n\n            <div class=\"recipe__info-buttons\">\n                <button class=\"btn--tiny btn--update-servings\" data-update-to=\"").concat(this._data.servings - 1, "\">\n                <svg>\n                    <use href=\"").concat(_icons.default, "#icon-minus-circle\"></use>\n                </svg>\n                </button>\n                <button class=\"btn--tiny btn--update-servings\" data-update-to=\"").concat(this._data.servings + 1, "\">\n                <svg>\n                    <use href=\"").concat(_icons.default, "#icon-plus-circle\"></use>\n                </svg>\n                </button>\n            </div>\n            </div>\n\n            <div class=\"recipe__user-generated\">\n            </div>\n            <button class=\"btn--round btn--bookmark\">\n            <svg class=\"\">\n                <use href=\"").concat(_icons.default, "#icon-bookmark").concat(this._data.bookmarked ? '-fill' : '', "\"></use>\n            </svg>\n            </button>\n        </div>\n\n        <div class=\"recipe__ingredients\">\n            <h2 class=\"heading--2\">Recipe ingredients</h2>\n            <ul class=\"recipe__ingredient-list\">\n                ").concat(this._data.ingredients.map(this._generateMarupIngredient).join(''), "\n            </ul>\n        </div>\n\n        <div class=\"recipe__directions\">\n            <h2 class=\"heading--2\">How to cook it</h2>\n            <p class=\"recipe__directions-text\">\n            This recipe was carefully designed and tested by\n            <span class=\"recipe__publisher\">").concat(this._data.publisher, "</span>. Please check out\n            directions at their website.\n            </p>\n            <a\n            class=\"btn--small recipe__btn\"\n            href=\"").concat(this._data.sourceURL, "\"\n            target=\"_blank\"\n            >\n            <span>Directions</span>\n            <svg class=\"search__icon\">\n                <use href=\"").concat(_icons.default, "#icon-arrow-right\"></use>\n            </svg>\n            </a>\n        </div>\n        ");
+      return "\n        <figure class=\"recipe__fig\">\n            <img src=\"".concat(this._data.image, "\" alt=\"").concat(this._data.title, "\" class=\"recipe__img\" />\n            <h1 class=\"recipe__title\">\n            <span>").concat(this._data.title, "</span>\n            </h1>\n        </figure>\n\n        <div class=\"recipe__details\">\n            <div class=\"recipe__info\">\n            <svg class=\"recipe__info-icon\">\n                <use href=\"").concat(_icons.default, "#icon-clock\"></use>\n            </svg>\n            <span class=\"recipe__info-data recipe__info-data--minutes\">").concat(this._data.cookingTime, "</span>\n            <span class=\"recipe__info-text\">minutes</span>\n            </div>\n            <div class=\"recipe__info\">\n            <svg class=\"recipe__info-icon\">\n                <use href=\"").concat(_icons.default, "#icon-users\"></use>\n            </svg>\n            <span class=\"recipe__info-data recipe__info-data--people\">").concat(this._data.servings, "</span>\n            <span class=\"recipe__info-text\">").concat(this._data.servings === 1 ? 'serving' : 'servings', "</span>\n\n            <div class=\"recipe__info-buttons\">\n                <button class=\"btn--tiny btn--update-servings\" data-update-to=\"").concat(this._data.servings - 1, "\">\n                <svg>\n                    <use href=\"").concat(_icons.default, "#icon-minus-circle\"></use>\n                </svg>\n                </button>\n                <button class=\"btn--tiny btn--update-servings\" data-update-to=\"").concat(this._data.servings + 1, "\">\n                <svg>\n                    <use href=\"").concat(_icons.default, "#icon-plus-circle\"></use>\n                </svg>\n                </button>\n            </div>\n            </div>\n\n            <div class=\"recipe__user-generated ").concat(this._data.key ? '' : 'hidden', "\">\n                <svg>\n                    <use href=\"").concat(_icons.default, "#icon-user\"></use>\n                </svg>\n            </div>\n            <button class=\"btn--round btn--bookmark\">\n            <svg class=\"\">\n                <use href=\"").concat(_icons.default, "#icon-bookmark").concat(this._data.bookmarked ? '-fill' : '', "\"></use>\n            </svg>\n            </button>\n        </div>\n\n        <div class=\"recipe__ingredients\">\n            <h2 class=\"heading--2\">Recipe ingredients</h2>\n            <ul class=\"recipe__ingredient-list\">\n                ").concat(this._data.ingredients.map(this._generateMarupIngredient).join(''), "\n            </ul>\n        </div>\n\n        <div class=\"recipe__directions\">\n            <h2 class=\"heading--2\">How to cook it</h2>\n            <p class=\"recipe__directions-text\">\n            This recipe was carefully designed and tested by\n            <span class=\"recipe__publisher\">").concat(this._data.publisher, "</span>. Please check out\n            directions at their website.\n            </p>\n            <a\n            class=\"btn--small recipe__btn\"\n            href=\"").concat(this._data.sourceURL, "\"\n            target=\"_blank\"\n            >\n            <span>Directions</span>\n            <svg class=\"search__icon\">\n                <use href=\"").concat(_icons.default, "#icon-arrow-right\"></use>\n            </svg>\n            </a>\n        </div>\n        ");
     }
   }, {
     key: "_generateMarupIngredient",
@@ -1933,6 +1926,8 @@ exports.default = void 0;
 
 var _View2 = _interopRequireDefault(require("./View"));
 
+var _icons = _interopRequireDefault(require("../../img/icons.svg"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -1984,7 +1979,7 @@ var PreviewView = /*#__PURE__*/function (_View) {
     key: "_generateMarkup",
     value: function _generateMarkup() {
       var id = window.location.hash.slice(1);
-      return "\n        <li class=\"preview\">\n            <a class=\"preview__link ".concat(this._data.id === id ? 'preview__link--active' : '', "\" href=\"#").concat(this._data.id, "\">\n                <figure class=\"preview__fig\">\n                    <img src=\"").concat(this._data.image, "\" alt=\"").concat(this._data.title, "\" />\n                </figure>\n                <div class=\"preview__data\">\n                    <h4 class=\"preview__title\">").concat(this._data.title, "</h4>\n                    <p class=\"preview__publisher\">").concat(this._data.publisher, "</p>\n                </div>\n            </a>\n        </li>\n    ");
+      return "\n        <li class=\"preview\">\n            <a class=\"preview__link ".concat(this._data.id === id ? 'preview__link--active' : '', "\" href=\"#").concat(this._data.id, "\">\n                <figure class=\"preview__fig\">\n                    <img src=\"").concat(this._data.image, "\" alt=\"").concat(this._data.title, "\" />\n                </figure>\n                <div class=\"preview__data\">\n                    <h4 class=\"preview__title\">").concat(this._data.title, "</h4>\n                    <p class=\"preview__publisher\">").concat(this._data.publisher, "</p>\n                    <div class=\"preview__user-generated ").concat(this._data.key ? '' : 'hidden', "\">\n                        <svg>\n                            <use href=\"").concat(_icons.default, "#icon-user\"></use>\n                        </svg>\n                    </div>\n                </div>\n            </a>\n        </li>\n    ");
     }
   }]);
 
@@ -1994,7 +1989,7 @@ var PreviewView = /*#__PURE__*/function (_View) {
 var _default = new PreviewView();
 
 exports.default = _default;
-},{"./View":"src/js/views/View.js"}],"src/js/views/resultsView.js":[function(require,module,exports) {
+},{"./View":"src/js/views/View.js","../../img/icons.svg":"src/img/icons.svg"}],"src/js/views/resultsView.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14508,33 +14503,38 @@ var controlAddRecipe = /*#__PURE__*/function () {
             return model.uploadRecipe(newRecipe);
 
           case 4:
-            console.log(model.state.recipe); // Render the new recipe
-
+            // console.log(model.state.recipe);
+            // Render the new recipe
             _recipeView.default.render(model.state.recipe); // Display a success message
 
 
-            _addRecipeView.default.renderMessage(); // Close the modal
+            _addRecipeView.default.renderMessage(); // Render the bookmark view
 
+
+            _bookmarksView.default.render(model.state.bookmarks); // Change the URL hash to the new recipe id
+
+
+            window.history.pushState(null, '', "#".concat(model.state.recipe.id)); // Close the modal
 
             setTimeout(function () {
               _addRecipeView.default.toggleWindow();
-            }, 4000);
-            _context3.next = 14;
+            }, 3000);
+            _context3.next = 15;
             break;
 
-          case 10:
-            _context3.prev = 10;
+          case 11:
+            _context3.prev = 11;
             _context3.t0 = _context3["catch"](0);
             console.log(_context3.t0);
 
             _addRecipeView.default.renderError(_context3.t0.message);
 
-          case 14:
+          case 15:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3, null, [[0, 10]]);
+    }, _callee3, null, [[0, 11]]);
   }));
 
   return function controlAddRecipe(_x) {

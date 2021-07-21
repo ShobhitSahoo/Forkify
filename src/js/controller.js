@@ -96,7 +96,7 @@ const controlAddRecipe = async function (newRecipe) {
 
     // Upload the new recipe data to the server
     await model.uploadRecipe(newRecipe);
-    console.log(model.state.recipe);
+    // console.log(model.state.recipe);
 
     // Render the new recipe
     recipeView.render(model.state.recipe);
@@ -104,10 +104,16 @@ const controlAddRecipe = async function (newRecipe) {
     // Display a success message
     addRecipeView.renderMessage();
 
+    // Render the bookmark view
+    bookmarksView.render(model.state.bookmarks);
+
+    // Change the URL hash to the new recipe id
+    window.history.pushState(null, '', `#${model.state.recipe.id}`);
+
     // Close the modal
     setTimeout(function () {
       addRecipeView.toggleWindow();
-    }, 4000);
+    }, 3000);
   } catch (e) {
     console.log(e);
     addRecipeView.renderError(e.message);
