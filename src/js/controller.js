@@ -91,7 +91,27 @@ const controlBookmarks = function () {
 };
 
 const controlAddRecipe = async function (newRecipe) {
-  console.log(newRecipe);
+  try {
+    addRecipeView.renderSpinner();
+
+    // Upload the new recipe data to the server
+    await model.uploadRecipe(newRecipe);
+    console.log(model.state.recipe);
+
+    // Render the new recipe
+    recipeView.render(model.state.recipe);
+
+    // Display a success message
+    addRecipeView.renderMessage();
+
+    // Close the modal
+    setTimeout(function () {
+      addRecipeView.toggleWindow();
+    }, 4000);
+  } catch (e) {
+    console.log(e);
+    addRecipeView.renderError(e.message);
+  }
 };
 
 const init = function () {
