@@ -2,10 +2,10 @@
   "name": "forkify-v2",
   "version": "2.0.0",
   "description": "",
-  "main": "index.html",
+  "default": "index.html",
   "scripts": {
     "start": "parcel index.html",
-    "build": "parcel build --no-minify index.html"
+    "build": "parcel build index.html --public-url ./"
   },
   "repository": {
     "type": "git",
@@ -18,7 +18,8 @@
   },
   "homepage": "https://github.com/ShobhitSahoo/Forkify#readme",
   "devDependencies": {
-    "parcel-bundler": "^1.12.5",
+    "@parcel/transformer-sass": "^2.0.0-beta.1",
+    "parcel": "^2.0.0-beta.1",
     "sass": "^1.35.2"
   },
   "dependencies": {
